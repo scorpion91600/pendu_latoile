@@ -81,7 +81,7 @@ a {
 }
 
 .letter-btn {
-  color: #FF5B5B;
+  color: #120000;
   padding: 15px 10px;
   margin: 0;
   background: white;
@@ -92,7 +92,7 @@ a {
 }
 
 .letter-btn:hover {
-  background: #FF5B5B;
+  background: #a79999;
   color: white;
 }
 

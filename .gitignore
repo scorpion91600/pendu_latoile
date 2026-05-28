@@ -1,0 +1,5 @@
+# Secrets — ne jamais envoyer sur GitHub
+.env
+
+# Dépendances — trop lourd, se réinstalle avec "npm install"
+node_modules/

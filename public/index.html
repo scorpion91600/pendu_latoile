@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mon pendu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.1/css/all.css" />
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- NOUVEAUTÉ : plus de SDK Supabase ici — le frontend ne parle plus à Supabase directement -->
+    <!-- Il parle uniquement à notre serveur Express via fetch('/api/...') -->
+
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="row">
+        <!-- LEFT -->
+        <div class="columns six" style="margin: 0 2%;">
+          <div class="d-flex-between">
+            <h5 id="logo">Jeu du pendu</h5>
+            <div class="tabs">
+              <h5 id="launch-leaderboard" title="Classement"><i class="fa-solid fa-trophy"></i></h5>
+              <h5 id="launch-rules"><i class="fa-solid fa-book"></i></h5>
+              <h5 id="reload"><i class="fa-solid fa-repeat"></i></h5>
+            </div>
+          </div>
+          <div class="box-guess text-center">
+            <h6>Le mot à trouver est ...</h6>
+            <p><span id="word">Chargement...</span> (<span id="letters-count">?</span> lettres)</p>
+          </div>
+          <div id="letters" class="text-center">
+            <h6 id="btn-clue" class="d-flex-center">Voir un indice</h6>
+          </div>
+        </div>
+        <!-- RIGHT -->
+        <div class="columns six" style="margin: 0; background: #F2F2F2; box-shadow: inset 0px 4px 20px rgba(0, 0, 0, 0.25);">
+          <div id="box-img">
+            <img class="img-display active" src="assets/step_1.png">
+            <img class="img-display" src="assets/step_2.png">
+            <img class="img-display" src="assets/step_3.png">
+            <img class="img-display" src="assets/step_4.png">
+            <img class="img-display" src="assets/step_5.png">
+            <img class="img-display" src="assets/step_6.png">
+            <img class="img-display" src="assets/step_7.png">
+            <img class="img-display" src="assets/step_8.png">
+            <img class="img-display" src="assets/step_9.png">
+            <img class="img-display" src="assets/step_10.png">
+            <img class="img-display" src="assets/step_11.png">
+          </div>
+          <h5 class="box-guess text-center">
+            Plus que <span id="attempt"></span> essais
+          </h5>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="rules">
+      <p><strong>Les règles du jeu sont simples :</strong></p>
+      <p>Trouver un mot, lettre par lettre. Un thème : LE CODE !</p>
+      <p>Au bout de 10 essais ratés, tu es pendu.</p>
+    </div>
+    <div class="modal" id="leaderboard">
+      <h4>🏆 Classement</h4>
+      <div id="scores-list"></div>
+    </div>
+    <div class="modal d-flex-center text-center" id="clue"></div>
+    <div class="modal d-flex-center text-center" id="end"></div>
+  </body>
+</html>

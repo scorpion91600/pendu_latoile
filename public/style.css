@@ -15,15 +15,15 @@ a {
   text-decoration: none;
 }
 
-/* IMG */
+/* ── IMAGE ──────────────────────────────────────────────────────── */
 
 #box-img {
   width: 100%;
-  height: 600px;
+  height: clamp(200px, 42vh, 480px);
 }
 
 #box-img img {
-  height: 600px;
+  height: clamp(200px, 42vh, 480px);
   object-fit: contain;
   width: 100%;
   display: none;
@@ -33,7 +33,7 @@ a {
   display: block;
 }
 
-/**************/
+/* ── UTILITAIRES ────────────────────────────────────────────────── */
 
 .d-flex-between {
   display: flex;
@@ -55,92 +55,95 @@ a {
   color: #52b69a;
 }
 
-/***************/
+/* ── HEADER ─────────────────────────────────────────────────────── */
 
 #logo {
   font-family: 'Nanum Pen Script', cursive;
-  font-size: 41px;
+  font-size: 38px;
   margin-bottom: 0;
-}
-
-.columns {
-  height: 100vh;
-  overflow: hidden;
-  padding: 50px;
-}
-
-.box-guess {
-  margin: 50px 0;
-}
-
-#letters {
-  display: grid;
-  grid-template-columns : repeat(7, 1fr); 
-  grid-gap: 16px;
-  margin-top: 80px;
-}
-
-.letter-btn {
-  color: #120000;
-  padding: 15px 10px;
-  margin: 0;
-  background: white;
-  text-transform: capitalize;
-  border-radius: 5px;
-  filter: drop-shadow(0px 4px 10px rgba(114, 79, 79, 0.15));
-  transition: all 0.3s ease-in-out;
-}
-
-.letter-btn:hover {
-  background: #a79999;
-  color: white;
-}
-
-#word {
-  letter-spacing: .5rem;
-  font-size: 40px;
-}
-
-#attempt {
-  font-weight: bold;
-}
-
-#btn-clue {
-  grid-column: span 2;
-  color: white;
-  padding: 15px 10px;
-  margin: 0;
-  background: black;
-  border-radius: 5px;
-  filter: drop-shadow(0px 4px 10px rgba(114, 79, 79, 0.15));
-  transition: all 0.3s ease-in-out;
-}
-
-#btn-clue:hover {
-  background: #FF5B5B;
-  color: white;
 }
 
 .tabs {
   display: flex;
 }
 
-#launch-rules {
+#launch-leaderboard {
   color: black;
-  font-size: 28px;
+  font-size: 26px;
   margin: 0;
   margin-right: 20px;
+  cursor: pointer;
+}
+
+#launch-rules {
+  color: black;
+  font-size: 26px;
+  margin: 0;
+  margin-right: 20px;
+  cursor: pointer;
 }
 
 #reload {
   color: black;
-  font-size: 28px;
+  font-size: 26px;
   margin: 0;
   transition: all 0.3s ease-in-out;
+  cursor: pointer;
 }
 
 #reload:hover {
   color: #FF5B5B;
+}
+
+/* ── LAYOUT ─────────────────────────────────────────────────────── */
+
+.columns {
+  height: 100vh;
+  overflow: hidden;
+  padding: 28px 32px;
+}
+
+.box-guess {
+  margin: 16px 0;
+}
+
+/* ── MOT À DEVINER ──────────────────────────────────────────────── */
+
+#word {
+  letter-spacing: clamp(0.15rem, 0.5vw, 0.5rem);
+  font-size: clamp(22px, 2.8vw, 40px);
+}
+
+#attempt {
+  font-weight: bold;
+}
+
+/* ── GRILLE DE LETTRES ──────────────────────────────────────────── */
+
+#letters {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-top: 20px;
+}
+
+/* Correction clé : Skeleton impose 30px sur h3 → on surcharge ici */
+.letter-btn {
+  font-size: 14px;
+  color: #000000;
+  padding: 10px 6px;
+  margin: 0;
+  background: white;
+  text-transform: capitalize;
+  border-radius: 5px;
+  filter: drop-shadow(0px 4px 10px rgba(114, 79, 79, 0.15));
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.letter-btn:hover {
+  background: #8b7979;
+  color: white;
 }
 
 .present {
@@ -148,8 +151,28 @@ a {
 }
 
 .non-present {
-  opacity : 0.2;
+  opacity: 0.2;
 }
+
+#btn-clue {
+  grid-column: span 2;
+  font-size: 13px;
+  color: white;
+  padding: 10px 6px;
+  margin: 0;
+  background: black;
+  border-radius: 5px;
+  filter: drop-shadow(0px 4px 10px rgba(114, 79, 79, 0.15));
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+#btn-clue:hover {
+  background: #FF5B5B;
+  color: white;
+}
+
+/* ── MODALES ────────────────────────────────────────────────────── */
 
 .modal#clue {
   background: #ffffff78;
@@ -159,7 +182,7 @@ a {
 }
 
 .modal#rules {
-  background:#52b69a; 
+  background: #52b69a;
   color: white;
   display: flex;
   flex-direction: column;
@@ -168,13 +191,13 @@ a {
 }
 
 .modal#end {
-  background:#52b69a; 
+  background: #52b69a;
   color: white;
   font-weight: bold;
 }
 
 .modal.lost#end {
-  background: #FF5B5B; 
+  background: #FF5B5B;
   color: white;
   font-weight: bold;
 }
@@ -191,31 +214,19 @@ a {
 }
 
 .modal#rules.active {
-
   animation: 10s slidein;
-
 }
 
 @keyframes slidein {
-  0% {
-    top: -100vh;
-  }
-
-  15% {
-    top: 50vh;
-  }
-  88% {
-    top: 50vh;
-  }
-  93% {
-    top: 51vh;
-  }
-  100% {
-    top: -100vh;
-  }
+  0%   { top: -100vh; }
+  15%  { top: 50vh; }
+  88%  { top: 50vh; }
+  93%  { top: 51vh; }
+  100% { top: -100vh; }
 }
 
-/* Formulaire de score (modale de fin) */
+/* ── FORMULAIRE DE SCORE (modale de fin) ────────────────────────── */
+
 #end > div {
   display: flex;
   flex-direction: column;
@@ -238,13 +249,13 @@ a {
   border: none;
   font-size: 16px;
   text-align: center;
-  width: 220px;
+  width: min(220px, 70vw);
   outline: none;
 }
 
 .score-form button {
   padding: 12px 0;
-  width: 220px;
+  width: min(220px, 70vw);
   background: white;
   color: #52b69a;
   border: none;
@@ -255,11 +266,12 @@ a {
   transition: background 0.2s ease, transform 0.1s ease;
 }
 
-.score-form button:hover { background: #f0f0f0; }
+.score-form button:hover  { background: #f0f0f0; }
 .score-form button:active { transform: scale(0.97); }
 .modal.lost .score-form button { color: #FF5B5B; }
 
-/* Leaderboard */
+/* ── LEADERBOARD ────────────────────────────────────────────────── */
+
 .modal#leaderboard {
   background: #1a1a2e;
   color: white;
@@ -286,7 +298,7 @@ a {
   align-items: center;
   padding: 14px 20px;
   margin-bottom: 8px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
   font-size: 15px;
 }
@@ -297,10 +309,104 @@ a {
 .leaderboard-row .score  { color: #52b69a; font-weight: bold; min-width: 60px; text-align: right; }
 .leaderboard-empty       { color: #aaa; text-align: center; margin-top: 20px; }
 
-#launch-leaderboard {
-  color: black;
-  font-size: 28px;
-  margin: 0;
-  margin-right: 20px;
-  cursor: pointer;
+/* ── TABLETTE (550px – 960px) ───────────────────────────────────── */
+
+@media (max-width: 960px) {
+  .columns {
+    padding: 20px 24px;
+  }
+
+  #box-img,
+  #box-img img {
+    height: clamp(160px, 34vh, 360px);
+  }
+
+  .box-guess {
+    margin: 10px 0;
+  }
+
+  #letters {
+    gap: 6px;
+    margin-top: 14px;
+  }
+
+  .modal#leaderboard {
+    padding: 40px 20px;
+  }
+}
+
+/* ── MOBILE (< 550px — breakpoint de Skeleton) ──────────────────── */
+
+@media (max-width: 550px) {
+  /* On autorise le scroll vertical sur mobile */
+  body {
+    height: auto;
+    overflow-y: auto;
+  }
+
+  .columns {
+    height: auto;
+    overflow: visible;
+    padding: 16px;
+  }
+
+  /* Colonne image : padding réduit */
+  .columns:last-child {
+    padding-top: 0;
+  }
+
+  #box-img,
+  #box-img img {
+    height: 190px;
+  }
+
+  #logo {
+    font-size: 28px;
+  }
+
+  #launch-leaderboard,
+  #launch-rules,
+  #reload {
+    font-size: 20px;
+    margin-right: 14px;
+  }
+
+  .box-guess {
+    margin: 8px 0;
+  }
+
+  #word {
+    font-size: 20px;
+    letter-spacing: 0.15rem;
+  }
+
+  #letters {
+    gap: 5px;
+    margin-top: 12px;
+  }
+
+  .letter-btn {
+    padding: 9px 4px;
+    font-size: 13px;
+    border-radius: 4px;
+  }
+
+  #btn-clue {
+    padding: 9px 4px;
+    font-size: 12px;
+  }
+
+  /* Leaderboard compact sur mobile */
+  .modal#leaderboard {
+    padding: 30px 16px;
+  }
+
+  .leaderboard-row {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .leaderboard-row .rang  { font-size: 16px; width: 30px; }
+  .leaderboard-row .stats { font-size: 11px; margin-right: 8px; }
+  .leaderboard-row .score { min-width: 48px; }
 }

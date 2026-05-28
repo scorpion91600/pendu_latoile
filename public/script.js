@@ -1,412 +1,176 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
+// ─── SETUP UI ────────────────────────────────────────────────────────────────
+// Pas de Supabase ici — le frontend ne connaît plus les clés
+// Il parle uniquement à notre serveur Express
 
-* {
-  font-family: 'Poppins', sans-serif;
+const mesLettres = "abcdefghijklmnopqrstuvwxyz".split("")
+
+const reload = document.querySelector("#reload")
+reload.addEventListener("click", function() { location.reload() })
+
+const rules = document.querySelector("#launch-rules")
+const modalRules = document.querySelector(".modal#rules")
+rules.addEventListener("click", function() {
+  modalRules.classList.add("active")
+  modalRules.addEventListener("click", function() { modalRules.classList.remove("active") })
+})
+
+const modalEnd  = document.querySelector(".modal#end")
+const modalClue = document.querySelector(".modal#clue")
+
+// ─── FETCH MOT — appel vers notre serveur Express ────────────────────────────
+// NOUVEAUTÉ : au lieu de db.from('mots'), on appelle /api/mot
+// Express va chercher dans Supabase et nous renvoie le résultat
+
+async function fetchMotAleatoire() {
+  const response = await fetch('/api/mot')
+  const motData  = await response.json()
+  return motData
 }
 
-body {
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
+// ─── METTRE À JOUR LE SCORE — appel vers notre serveur Express ───────────────
+
+async function mettreAJourScore(prenom, tentativesRestantes, victoire) {
+  await fetch('/api/joueurs', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prenom, tentatives_restantes: tentativesRestantes, victoire })
+  })
 }
 
-a {
-  text-decoration: none;
-}
+// ─── AFFICHER LE CLASSEMENT — appel vers notre serveur Express ───────────────
 
-/* ── IMAGE ──────────────────────────────────────────────────────── */
+async function afficherClassement() {
+  const response = await fetch('/api/joueurs')
+  const data     = await response.json()
 
-#box-img {
-  width: 100%;
-  height: clamp(200px, 42vh, 480px);
-}
+  const scoresList = document.querySelector("#scores-list")
 
-#box-img img {
-  height: clamp(200px, 42vh, 480px);
-  object-fit: contain;
-  width: 100%;
-  display: none;
-}
-
-#box-img img.active {
-  display: block;
-}
-
-/* ── UTILITAIRES ────────────────────────────────────────────────── */
-
-.d-flex-between {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.d-flex-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.text-green {
-  color: #52b69a;
-}
-
-/* ── HEADER ─────────────────────────────────────────────────────── */
-
-#logo {
-  font-family: 'Nanum Pen Script', cursive;
-  font-size: 38px;
-  margin-bottom: 0;
-}
-
-.tabs {
-  display: flex;
-}
-
-#launch-leaderboard {
-  color: black;
-  font-size: 26px;
-  margin: 0;
-  margin-right: 20px;
-  cursor: pointer;
-}
-
-#launch-rules {
-  color: black;
-  font-size: 26px;
-  margin: 0;
-  margin-right: 20px;
-  cursor: pointer;
-}
-
-#reload {
-  color: black;
-  font-size: 26px;
-  margin: 0;
-  transition: all 0.3s ease-in-out;
-  cursor: pointer;
-}
-
-#reload:hover {
-  color: #FF5B5B;
-}
-
-/* ── LAYOUT ─────────────────────────────────────────────────────── */
-
-.columns {
-  height: 100vh;
-  overflow: hidden;
-  padding: 28px 32px;
-}
-
-.box-guess {
-  margin: 16px 0;
-}
-
-/* ── MOT À DEVINER ──────────────────────────────────────────────── */
-
-#word {
-  letter-spacing: clamp(0.15rem, 0.5vw, 0.5rem);
-  font-size: clamp(22px, 2.8vw, 40px);
-}
-
-#attempt {
-  font-weight: bold;
-}
-
-/* ── GRILLE DE LETTRES ──────────────────────────────────────────── */
-
-#letters {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-  margin-top: 20px;
-}
-
-/* Correction clé : Skeleton impose 30px sur h3 → on surcharge ici */
-.letter-btn {
-  font-size: 14px;
-  color: #000000;
-  padding: 10px 6px;
-  margin: 0;
-  background: white;
-  text-transform: capitalize;
-  border-radius: 5px;
-  filter: drop-shadow(0px 4px 10px rgba(114, 79, 79, 0.15));
-  transition: all 0.3s ease-in-out;
-  cursor: pointer;
-}
-
-.letter-btn:hover {
-  background: #8b7979;
-  color: white;
-}
-
-.present {
-  box-shadow: 0px 0px 0px 1px;
-}
-
-.non-present {
-  opacity: 0.2;
-}
-
-#btn-clue {
-  grid-column: span 2;
-  font-size: 13px;
-  color: white;
-  padding: 10px 6px;
-  margin: 0;
-  background: black;
-  border-radius: 5px;
-  filter: drop-shadow(0px 4px 10px rgba(114, 79, 79, 0.15));
-  transition: all 0.3s ease-in-out;
-  cursor: pointer;
-}
-
-#btn-clue:hover {
-  background: #FF5B5B;
-  color: white;
-}
-
-/* ── MODALES ────────────────────────────────────────────────────── */
-
-.modal#clue {
-  background: #ffffff78;
-  backdrop-filter: blur(10px);
-  color: #FF5B5B;
-  border-radius: 20px;
-}
-
-.modal#rules {
-  background: #52b69a;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-}
-
-.modal#end {
-  background: #52b69a;
-  color: white;
-  font-weight: bold;
-}
-
-.modal.lost#end {
-  background: #FF5B5B;
-  color: white;
-  font-weight: bold;
-}
-
-.modal.active {
-  position: absolute;
-  animation: 5s slidein;
-  top: -100vh;
-  left: 50vw;
-  width: 100vw;
-  height: 100vh;
-  transform: translate(-50%, -50%);
-  box-shadow: 0px 0px 100px lightgrey;
-}
-
-.modal#rules.active {
-  animation: 10s slidein;
-}
-
-@keyframes slidein {
-  0%   { top: -100vh; }
-  15%  { top: 50vh; }
-  88%  { top: 50vh; }
-  93%  { top: 51vh; }
-  100% { top: -100vh; }
-}
-
-/* ── FORMULAIRE DE SCORE (modale de fin) ────────────────────────── */
-
-#end > div {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-.score-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  margin-top: 20px;
-  width: 100%;
-}
-
-.score-form input {
-  padding: 12px 20px;
-  border-radius: 8px;
-  border: none;
-  font-size: 16px;
-  text-align: center;
-  width: min(220px, 70vw);
-  outline: none;
-}
-
-.score-form button {
-  padding: 12px 0;
-  width: min(220px, 70vw);
-  background: white;
-  color: #52b69a;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
-}
-
-.score-form button:hover  { background: #f0f0f0; }
-.score-form button:active { transform: scale(0.97); }
-.modal.lost .score-form button { color: #FF5B5B; }
-
-/* ── LEADERBOARD ────────────────────────────────────────────────── */
-
-.modal#leaderboard {
-  background: #1a1a2e;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 60px 40px;
-  overflow-y: auto;
-}
-
-.modal#leaderboard h4 {
-  color: white;
-  margin-bottom: 32px;
-}
-
-#scores-list {
-  width: 100%;
-  max-width: 500px;
-}
-
-.leaderboard-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 20px;
-  margin-bottom: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  font-size: 15px;
-}
-
-.leaderboard-row .rang   { font-size: 20px; width: 40px; }
-.leaderboard-row .prenom { flex: 1; font-weight: bold; }
-.leaderboard-row .stats  { color: #aaa; font-size: 13px; margin-right: 16px; }
-.leaderboard-row .score  { color: #52b69a; font-weight: bold; min-width: 60px; text-align: right; }
-.leaderboard-empty       { color: #aaa; text-align: center; margin-top: 20px; }
-
-/* ── TABLETTE (550px – 960px) ───────────────────────────────────── */
-
-@media (max-width: 960px) {
-  .columns {
-    padding: 20px 24px;
+  if (data.length === 0) {
+    scoresList.innerHTML = '<p class="leaderboard-empty">Aucun score pour l\'instant. Sois le premier !</p>'
+  } else {
+    const medals = ['🥇', '🥈', '🥉']
+    scoresList.innerHTML = data.map(function(joueur, index) {
+      const rang = medals[index] || (index + 1) + '.'
+      return `
+        <div class="leaderboard-row">
+          <span class="rang">${rang}</span>
+          <span class="prenom">${joueur.prenom}</span>
+          <span class="stats">${joueur.victoires}/${joueur.parties} parties</span>
+          <span class="score">${joueur.points} pts</span>
+        </div>
+      `
+    }).join('')
   }
 
-  #box-img,
-  #box-img img {
-    height: clamp(160px, 34vh, 360px);
-  }
-
-  .box-guess {
-    margin: 10px 0;
-  }
-
-  #letters {
-    gap: 6px;
-    margin-top: 14px;
-  }
-
-  .modal#leaderboard {
-    padding: 40px 20px;
-  }
+  const modalLeaderboard = document.querySelector(".modal#leaderboard")
+  modalLeaderboard.classList.add("active")
+  modalLeaderboard.addEventListener("click", function() {
+    modalLeaderboard.classList.remove("active")
+  }, { once: true })
 }
 
-/* ── MOBILE (< 550px — breakpoint de Skeleton) ──────────────────── */
+document.querySelector("#launch-leaderboard").addEventListener("click", afficherClassement)
 
-@media (max-width: 550px) {
-  /* On autorise le scroll vertical sur mobile */
-  body {
-    height: auto;
-    overflow-y: auto;
-  }
+// ─── INIT JEU ────────────────────────────────────────────────────────────────
 
-  .columns {
-    height: auto;
-    overflow: visible;
-    padding: 16px;
-  }
+async function initJeu() {
+  const motData = await fetchMotAleatoire()
+  if (!motData) return
 
-  /* Colonne image : padding réduit */
-  .columns:last-child {
-    padding-top: 0;
-  }
+  const randomWord = motData.mot
+  const wordClues  = [motData.indice_1, motData.indice_2]
+  const randomWordArraySolution = randomWord.split("")
+  const randomWordArrayGuess    = Array(randomWordArraySolution.length).fill("_")
 
-  #box-img,
-  #box-img img {
-    height: 190px;
-  }
+  const wordDisplay = document.querySelector("#word")
+  wordDisplay.textContent = randomWordArrayGuess.join("")
+  document.querySelector("#letters-count").textContent = randomWord.length
 
-  #logo {
-    font-size: 28px;
-  }
+  const lettersDisplay = document.querySelector("#letters")
+  mesLettres.forEach(function(letter) {
+    const letterBtn = document.createElement("h3")
+    letterBtn.className = "letter-btn"
+    letterBtn.textContent = letter
+    lettersDisplay.appendChild(letterBtn)
+  })
 
-  #launch-leaderboard,
-  #launch-rules,
-  #reload {
-    font-size: 20px;
-    margin-right: 14px;
-  }
+  let tentatives = 10
+  const attemptDisplay = document.querySelector("#attempt")
+  attemptDisplay.textContent = tentatives
 
-  .box-guess {
-    margin: 8px 0;
-  }
+  document.querySelectorAll(".letter-btn").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      const clickedLetterValue = btn.textContent.toUpperCase()
+      let presence = false
 
-  #word {
-    font-size: 20px;
-    letter-spacing: 0.15rem;
-  }
+      for (let i = 0; i < randomWordArraySolution.length; i++) {
+        if (clickedLetterValue === randomWordArraySolution[i].toUpperCase()) {
+          randomWordArrayGuess[i] = clickedLetterValue
+          presence = true
+          btn.classList.add("present")
+        }
+      }
+      wordDisplay.textContent = randomWordArrayGuess.join("")
 
-  #letters {
-    gap: 5px;
-    margin-top: 12px;
-  }
+      if (!presence) {
+        tentatives -= 1
+        btn.classList.add("non-present")
+        const activeImg = document.querySelector(".img-display.active")
+        if (activeImg) {
+          activeImg.classList.remove("active")
+          if (activeImg.nextElementSibling) activeImg.nextElementSibling.classList.add("active")
+        }
+      }
 
-  .letter-btn {
-    padding: 9px 4px;
-    font-size: 13px;
-    border-radius: 4px;
-  }
+      attemptDisplay.textContent = tentatives
 
-  #btn-clue {
-    padding: 9px 4px;
-    font-size: 12px;
-  }
+      const victoire = randomWordArrayGuess.join("") === randomWordArraySolution.join("").toUpperCase()
+      if (victoire || tentatives === 0) {
+        let message = ""
+        if (victoire) {
+          if (tentatives === 10)   message = "Bravo 🎉 ! One shot ! Quel talent ! 😍"
+          else if (tentatives > 3) message = "Bravo 🎉 ! Encore un peu d'entraînement ! 💪"
+          else                     message = "Bravo 🎉 ! Tu l'as échappé belle ! 🥲"
+          wordDisplay.classList.add("text-green")
+        } else {
+          message = "Bon ben... Tu feras mieux la prochaine fois ! 🤞"
+          modalEnd.classList.add("lost")
+        }
 
-  /* Leaderboard compact sur mobile */
-  .modal#leaderboard {
-    padding: 30px 16px;
-  }
+        setTimeout(function() {
+          modalEnd.classList.add("active")
+          modalEnd.style.animation = 'none'
+          modalEnd.style.top = '50vh'
+          modalEnd.innerHTML = `
+            <div>
+              <h5>${message}</h5>
+              <div class="score-form">
+                <input type="text" id="input-prenom" placeholder="Ton prénom" maxlength="20" />
+                <button id="btn-sauver">Sauver mon score</button>
+              </div>
+            </div>
+          `
 
-  .leaderboard-row {
-    padding: 10px 12px;
-    font-size: 13px;
-  }
+          document.querySelector("#btn-sauver").addEventListener("click", async function() {
+            const prenom = document.querySelector("#input-prenom").value.trim()
+            if (!prenom) return
+            await mettreAJourScore(prenom, tentatives, victoire)
+            modalEnd.classList.remove("active")
+            await afficherClassement()
+            setTimeout(function() { location.reload() }, 6000)
+          })
+        }, 1000)
+      }
+    })
+  })
 
-  .leaderboard-row .rang  { font-size: 16px; width: 30px; }
-  .leaderboard-row .stats { font-size: 11px; margin-right: 8px; }
-  .leaderboard-row .score { min-width: 48px; }
+  document.querySelector("#btn-clue").addEventListener("click", function() {
+    const randomClue = wordClues[Math.floor(Math.random() * wordClues.length)]
+    modalClue.innerHTML = `<h5>${randomClue}</h5>`
+    modalClue.classList.add("active")
+    setTimeout(function() { modalClue.classList.remove("active") }, 6000)
+    modalClue.addEventListener("click", function() { modalClue.classList.remove("active") })
+  })
 }
+
+initJeu()
